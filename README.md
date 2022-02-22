@@ -1,5 +1,5 @@
 # Birefringence.jl
-A computational calculation of the revised Michel-Lévy interference colour chart
+A computational calculation of the revised Michel-Lévy interference colour chart, based on Sørensen (2012)
 
 <img width="1035" alt="Screen Shot 2022-01-18 at 10 23 30" src="https://user-images.githubusercontent.com/38541020/150920010-4e668a3c-7c0c-4d3f-8ab7-4f661f020844.png">
 
@@ -34,3 +34,7 @@ Optional parameters:
 
 # Version log
 - v0.1.0 First release, basic functionality
+
+# References
+
+Bjørn Eske Sørensen; A revised Michel-Lévy interference colour chart based on first-principles calculations. European Journal of Mineralogy 2012;; 25 (1): 5–10. doi: https://doi.org/10.1127/0935-1221/2013/0025-2252
