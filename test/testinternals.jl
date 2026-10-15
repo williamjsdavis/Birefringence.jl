@@ -68,6 +68,8 @@ function test_internals(λ_array, Γ_array)
         @test isapprox(RGB_ranges, RGB_collects, atol=1e-5)
         @test isapprox(RGB_ranges, RGB_downsample, atol=1e-5)
         @test size(RGB_array) == (Γ_length,)
+        # Adobe RGB matrix maps the D65 white point to (1,1,1)
+        @test isapprox(Birefringence.MRGB * [0.95047, 1.0, 1.08883], ones(3), atol=1e-3)
     end
     return RGB_array
 end
