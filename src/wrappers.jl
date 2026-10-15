@@ -6,18 +6,23 @@ Parameters:
 
 Optional parameters:
 λ => Wavelength integration grid, nm
-gamma => Non-linear contrast correction, [0,1]
+colorspace => Output RGB color space, `AdobeRGB()` (default) or `sRGB()`
+γ => Gamma encoding. `nothing` (default) uses the color space's standard
+     transfer function; a number in [0,1] applies a simple power law x^γ
+     instead (γ=1 gives linear RGB)
 vision => Standard or color deficiency type
 """
 function birefringence_array(
     Γ;
     λ=380.0:5.0:780.0,
-    γ=0.5,
+    colorspace::RGBColorSpace=AdobeRGB(),
+    γ=nothing,
     vision::Vision=Standard(),
 )
-    RGB_raw = XYZ_to_RGB(λ, Γ)
+    RGB_raw = XYZ_to_RGB(λ, Γ, colorspace)
     RGB_clip = clamp_RGB(RGB_raw)
-    RGB_γ_corrected = RGB_γ_correction(RGB_clip, γ)
-    RGBtype_array = RGB_typearray(RGB_γ_corrected)
+    RGB_encoded = isnothing(γ) ? encode_RGB(RGB_clip, colorspace) :
+                                 RGB_γ_correction(RGB_clip, γ)
+    RGBtype_array = RGB_typearray(RGB_encoded)
     return visualise(RGBtype_array, vision)
 end

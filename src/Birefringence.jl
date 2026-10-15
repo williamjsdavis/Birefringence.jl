@@ -1,6 +1,7 @@
 module Birefringence
 
 export birefringence_array
+export AdobeRGB, sRGB
 export Standard, Protanopia, Deuteranopia, Tritanopia
 export Protanomaly, Deuteranomaly, Tritanomaly
 
