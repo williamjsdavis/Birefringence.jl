@@ -34,6 +34,7 @@ Optional parameters:
 
 # Version log
 - v0.1.0 First release, basic functionality
+- v0.1.1 Regenerated Manifest for current Julia (old manifest failed to load); added [compat] bounds, requires Julia 1.10+
 
 # References
 
