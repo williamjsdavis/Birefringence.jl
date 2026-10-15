@@ -68,8 +68,24 @@ function test_internals(λ_array, Γ_array)
         @test isapprox(RGB_ranges, RGB_collects, atol=1e-5)
         @test isapprox(RGB_ranges, RGB_downsample, atol=1e-5)
         @test size(RGB_array) == (Γ_length,)
-        # Adobe RGB matrix maps the D65 white point to (1,1,1)
-        @test isapprox(Birefringence.MRGB * [0.95047, 1.0, 1.08883], ones(3), atol=1e-3)
+        # RGB matrices map the D65 white point to (1,1,1)
+        D65_white = [0.95047, 1.0, 1.08883]
+        @test isapprox(Birefringence.MRGB_ADOBE * D65_white, ones(3), atol=1e-3)
+        @test isapprox(Birefringence.MRGB_SRGB * D65_white, ones(3), atol=1e-3)
+    end
+
+    @testset "Transfer functions" begin
+        for cs in (AdobeRGB(), sRGB())
+            @test Birefringence.encode(0.0, cs) == 0.0
+            @test Birefringence.encode(1.0, cs) ≈ 1.0
+            x = 0:0.001:1
+            @test issorted(Birefringence.encode.(x, Ref(cs)))
+        end
+        # sRGB piecewise function is continuous at the breakpoint
+        @test isapprox(12.92 * 0.0031308,
+                       1.055 * 0.0031308^(1/2.4) - 0.055, atol=1e-6)
+        # Adobe RGB gamma is 563/256 ≈ 2.2
+        @test Birefringence.encode(0.5, AdobeRGB()) ≈ 0.5^(256/563)
     end
     return RGB_array
 end
