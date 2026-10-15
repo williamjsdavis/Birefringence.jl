@@ -1,6 +1,6 @@
 # Conversion from CIE XYZ tristimulus values to displayable colors
 
-const MRGB = [ 2.04414 -0.5649 -0.3447;
+const MRGB = [ 2.0414 -0.5649 -0.3447;
               -0.9693   1.8760  0.0416;
                0.0134  -0.1184  1.0154]
 

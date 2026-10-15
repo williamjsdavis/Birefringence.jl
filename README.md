@@ -35,6 +35,7 @@ Optional parameters:
 # Version log
 - v0.1.0 First release, basic functionality
 - v0.1.1 Regenerated Manifest for current Julia (old manifest failed to load); added [compat] bounds, requires Julia 1.10+
+- v0.1.2 Fixed typo in the XYZ to Adobe RGB conversion matrix (red channel was ~0.3% too high)
 
 # References
 
