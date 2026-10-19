@@ -18,6 +18,9 @@ function test_internals(λ_array, Γ_array)
         @test size(color_matching_range) == (3, λ_length)
         @test size(color_matching_collect) == (3, λ_length)
         @test all(color_matching_range .≈ color_matching_collect)
+        # Equal-energy white has chromaticity (1/3, 1/3)
+        XYZ_E = vec(sum(Birefringence.CIE_standard(360:1:830), dims=2))
+        @test isapprox(XYZ_E[1:2] ./ sum(XYZ_E), [1/3, 1/3], atol=1e-3)
     end
 
     @testset "Physics" begin

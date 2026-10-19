@@ -27,6 +27,8 @@ RGB_linear = birefringence_array(Γ_array, colorspace=sRGB(), γ=1)
     @test all(RGB_default .== RGB_srgb)
     @test size(RGB_srgb) == (Γ_length,)
     @test RGB_srgb != RGB_adobe
+    # Integer wavelength grids work and match float grids
+    @test birefringence_array(Γ_array, λ=380:5:780) == birefringence_array(Γ_array, λ=380.0:5.0:780.0)
     # Zero path difference is black in every color space
     @test RGB_srgb[1] == Birefringence.RGB(0.0, 0.0, 0.0)
     # Encoding brightens: encoded values are ≥ linear values
