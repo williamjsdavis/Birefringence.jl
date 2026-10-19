@@ -38,4 +38,4 @@ julia --project=. examples/michel_levy_table.jl
 
 To change the settings, e.g. the light source or range of path differences, edit `michel_levy_table.jl`. For example, `birefringence_array(Γ, illuminant=Blackbody(3200))` and `birefringence_XYZ(Γ, illuminant=Blackbody(3200))` give the colours under a 3200 K halogen lamp.
 
-If you use these values in published work, please cite the package and Sørensen (2013).
+If you use these values in published work, please cite the package and Sørensen (2013): see [Cite this work](../README.md#cite-this-work).

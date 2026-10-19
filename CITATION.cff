@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+message: >-
+  If you use this software, please cite it as below, and also cite
+  Sørensen (2013), on which the calculation is based.
+title: "Birefringence.jl: computational Michel-Lévy interference colour charts"
+type: software
+authors:
+  - given-names: William
+    family-names: Davis
+version: 0.4.1
+license: MIT
+repository-code: "https://github.com/williamjsdavis/Birefringence.jl"
+keywords:
+  - birefringence
+  - interference colour
+  - Michel-Lévy chart
+  - optical mineralogy
+  - Julia
+references:
+  - type: article
+    authors:
+      - given-names: Bjørn Eske
+        family-names: Sørensen
+    title: >-
+      A revised Michel-Lévy interference colour chart based on
+      first-principles calculations
+    journal: European Journal of Mineralogy
+    year: 2013
+    volume: 25
+    issue: 1
+    start: 5
+    end: 10
+    doi: 10.1127/0935-1221/2013/0025-2252

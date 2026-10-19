@@ -113,6 +113,33 @@ The result matches the paper's method to within mean ΔE₀₀ = 0.15 (max 0.71)
 
 ... where `p` is a value between 0 and 1, where 1 is complete loss of that cone sensitivity, and 0 is no loss in sensitivity.
 
+# Cite this work
+
+If you use Birefringence.jl in published work, please cite both this package and Sørensen (2013), on which the calculation is based. The colors depend on the settings used, so please also state the package version and the settings, e.g. "default settings (D65, white balance, sRGB)" or "`sorensen2013()` settings".
+
+GitHub's "Cite this repository" button (from [`CITATION.cff`](CITATION.cff)) gives this citation in APA and BibTeX formats. In BibTeX:
+
+```bibtex
+@software{davis_birefringence_jl,
+  author  = {Davis, William},
+  title   = {Birefringence.jl: computational Michel-Lévy interference colour charts},
+  url     = {https://github.com/williamjsdavis/Birefringence.jl},
+  version = {0.4.1},
+  year    = {2026}
+}
+
+@article{sorensen_2013,
+  author  = {Sørensen, Bjørn Eske},
+  title   = {A revised Michel-Lévy interference colour chart based on first-principles calculations},
+  journal = {European Journal of Mineralogy},
+  year    = {2013},
+  volume  = {25},
+  number  = {1},
+  pages   = {5--10},
+  doi     = {10.1127/0935-1221/2013/0025-2252}
+}
+```
+
 # Version log
 - v0.1.0 First release, basic functionality
 - v0.1.1 Regenerated Manifest for current Julia (old manifest failed to load); added [compat] bounds, requires Julia 1.10+
@@ -121,6 +148,7 @@ The result matches the paper's method to within mean ΔE₀₀ = 0.15 (max 0.71)
 - v0.2.1 Fixed typo in the ȳ color matching function (left width 49.9 nm, should be 46.9 nm), which shifted all colors slightly towards green. Fixed crash when the wavelength grid `λ` uses integers
 - v0.3.0 Added `illuminant` (`D65()`, `IlluminantE()`, `IlluminantA()`, `Blackbody(T)`), `white_balance` and `brightness` options. Default light source is now D65 daylight (previously equal energy), with white balance. Colors are now normalised so that full transmission has luminance 1, replacing the 1/100 scale factor of Sørensen (2013). Added `sorensen2013()` settings to reproduce the published chart. Fixed the `xyY` function
 - v0.4.0 Added `birefringence_XYZ` for CIE XYZ output without clipping. Added `examples/` with a table of interference colors from 0 to 1600 nm
+- v0.4.1 Added `CITATION.cff` and a "Cite this work" section
 
 # References
 
