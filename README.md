@@ -54,6 +54,7 @@ colors = birefringence_array(Γ)  # sRGB by default
 - v0.1.1 Regenerated Manifest for current Julia (old manifest failed to load); added [compat] bounds, requires Julia 1.10+
 - v0.1.2 Fixed typo in the XYZ to Adobe RGB conversion matrix (red channel was ~0.3% too high)
 - v0.2.0 Added `colorspace` option (`sRGB()`, `AdobeRGB()`). Default output is now sRGB (previously Adobe RGB), and gamma encoding defaults to each color space's standard transfer function instead of `x^0.5`. Pass `colorspace=AdobeRGB(), γ=0.5` to reproduce earlier output
+- v0.2.1 Fixed typo in the ȳ color matching function (left width 49.9 nm, should be 46.9 nm), which shifted all colors slightly towards green. Fixed crash when the wavelength grid `λ` uses integers
 
 # References
 
