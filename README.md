@@ -1,5 +1,5 @@
 # Birefringence.jl
-A computational calculation of the revised Michel-Lévy interference colour chart, based on Sørensen (2012)
+A computational calculation of the revised Michel-Lévy interference colour chart, based on Sørensen (2013). The default settings give physically accurate colors for comparison with photographs; the published chart can be reproduced with `sorensen2013()` (see below)
 
 <img width="1035" alt="Screen Shot 2022-01-18 at 10 23 30" src="https://user-images.githubusercontent.com/38541020/150920010-4e668a3c-7c0c-4d3f-8ab7-4f661f020844.png">
 
@@ -81,6 +81,18 @@ In summary: the choice between daylight and equal-energy light hardly matters, b
 colors = birefringence_array(Γ, illuminant=Blackbody(3200))
 ```
 
+## Reproducing the chart of Sørensen (2013)
+
+The default settings aim for physically accurate colors that can be compared with photographs (daylight, white balance, sRGB). They differ from the published chart of Sørensen (2013) by mean ΔE₀₀ = 4.2 for Γ = 0 to 1600 nm, with the largest differences in the first order (max 11.7, at Γ ≈ 220 nm). To reproduce the published chart, use the settings from the paper:
+
+```julia
+colors = birefringence_array(Γ; sorensen2013()...)
+```
+
+These are: wavelengths 360 to 830 nm, no light source spectrum (equivalent to `IlluminantE()`), no white balance, luminance scaled by 1/100 (`brightness ≈ 1.07`), Adobe RGB, and a gamma of 0.5 for contrast. Individual settings can be overridden, e.g. `birefringence_array(Γ; sorensen2013()..., vision=Protanopia())`.
+
+The result matches the paper's method to within mean ΔE₀₀ = 0.15 (max 0.71), which is not visible. The remaining differences are that this package uses analytic approximations of the CIE 1931 color matching functions rather than the tabulated values, and the corrected Adobe RGB matrix (the paper prints 2.04414 for 2.0414). Note that the paper's RGB values are Adobe RGB with a gamma of 0.5, but are displayed by most software as if they were sRGB.
+
 ## Types of vision supported
 
 - `Standard()`
@@ -99,8 +111,8 @@ colors = birefringence_array(Γ, illuminant=Blackbody(3200))
 - v0.1.2 Fixed typo in the XYZ to Adobe RGB conversion matrix (red channel was ~0.3% too high)
 - v0.2.0 Added `colorspace` option (`sRGB()`, `AdobeRGB()`). Default output is now sRGB (previously Adobe RGB), and gamma encoding defaults to each color space's standard transfer function instead of `x^0.5`. Pass `colorspace=AdobeRGB(), γ=0.5` to reproduce earlier output
 - v0.2.1 Fixed typo in the ȳ color matching function (left width 49.9 nm, should be 46.9 nm), which shifted all colors slightly towards green. Fixed crash when the wavelength grid `λ` uses integers
-- v0.3.0 Added `illuminant` (`D65()`, `IlluminantE()`, `IlluminantA()`, `Blackbody(T)`), `white_balance` and `brightness` options. Default light source is now D65 daylight (previously equal energy), with white balance. Colors are now normalised so that full transmission has luminance 1, replacing an arbitrary scale factor. Fixed the `xyY` function
+- v0.3.0 Added `illuminant` (`D65()`, `IlluminantE()`, `IlluminantA()`, `Blackbody(T)`), `white_balance` and `brightness` options. Default light source is now D65 daylight (previously equal energy), with white balance. Colors are now normalised so that full transmission has luminance 1, replacing the 1/100 scale factor of Sørensen (2013). Added `sorensen2013()` settings to reproduce the published chart. Fixed the `xyY` function
 
 # References
 
-Bjørn Eske Sørensen; A revised Michel-Lévy interference colour chart based on first-principles calculations. European Journal of Mineralogy 2012;; 25 (1): 5–10. doi: https://doi.org/10.1127/0935-1221/2013/0025-2252
+Bjørn Eske Sørensen; A revised Michel-Lévy interference colour chart based on first-principles calculations. European Journal of Mineralogy 2013; 25 (1): 5–10. doi: https://doi.org/10.1127/0935-1221/2013/0025-2252

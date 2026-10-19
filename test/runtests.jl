@@ -54,3 +54,31 @@ f(a) = reinterpret(Float64, a)
     @test lin(0.25)[unclipped] ≈ lin(0.5)[unclipped] ./ 2
     @test all(lin(0.0) .== 0)
 end
+
+@testset "Sørensen (2013) settings" begin
+    s = sorensen2013()
+    @test s.illuminant == IlluminantE()
+    @test s.white_balance == false
+    @test s.colorspace == AdobeRGB()
+    @test s.γ == 0.5
+    @test isapprox(s.brightness, 1.069, atol=1e-3)
+    # Peaks of linear RGB before clipping, as in Fig. 2 of the paper
+    Γ = 0.0:1.0:2500.0
+    lin = s.brightness * Birefringence.XYZ_to_RGB(
+        Birefringence.L_XYZ(s.λ, Γ, s.illuminant), s.colorspace)
+    for (channel, Γ_range, peak, Γ_peak) in ((1, 250:350, 1.21, 306),
+                                             (1, 850:1000, 1.22, 918),
+                                             (1, 1450:1550, 1.19, 1506),
+                                             (1, 2050:2150, 1.01, 2091),
+                                             (2, 230:320, 1.02, 273),
+                                             (3, 180:260, 0.98, 222))
+        v, i = findmax(lin[channel, Γ_range .+ 1])
+        @test isapprox(v, peak, atol=0.01)
+        @test abs(Γ_range[i] - Γ_peak) <= 2
+    end
+    # Settings can be combined with, and overridden by, other keywords
+    @test birefringence_array(Γ_array; sorensen2013()..., vision=Protanopia()) !=
+          birefringence_array(Γ_array; sorensen2013()...)
+    @test birefringence_array(Γ_array; sorensen2013()..., colorspace=sRGB()) !=
+          birefringence_array(Γ_array; sorensen2013()...)
+end
