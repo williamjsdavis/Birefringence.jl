@@ -1,6 +1,6 @@
 module Birefringence
 
-export birefringence_array
+export birefringence_array, birefringence_XYZ
 export AdobeRGB, sRGB
 export D65, IlluminantE, IlluminantA, Blackbody
 export sorensen2013

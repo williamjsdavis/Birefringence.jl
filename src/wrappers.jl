@@ -1,4 +1,37 @@
 """
+Calculate birefringence colors as CIE XYZ tristimulus values, before any
+conversion to RGB, and so without clipping. Returns a 3 × length(Γ) matrix,
+one (X, Y, Z) column per path difference. Useful for converting to other
+color spaces, such as CIELAB, to compare colors.
+
+Parameters:
+Γ => Path differences in nm, array
+
+Optional parameters (as for `birefringence_array`):
+λ => Wavelength integration grid, nm
+illuminant => Light source, `D65()` (default), `IlluminantE()`,
+              `IlluminantA()` or `Blackbody(T)`
+white_balance => If `true` (default), adapt colors so that the light source
+                 appears as the D65 white point
+brightness => Luminance scale. With `1` (default), a sample transmitting all
+              light has Y = 1
+"""
+function birefringence_XYZ(
+    Γ;
+    λ=380.0:5.0:780.0,
+    illuminant::Illuminant=D65(),
+    white_balance::Bool=true,
+    brightness::Real=1.0,
+    white=D65_WHITE,
+)
+    XYZ = brightness * L_XYZ(λ, Γ, illuminant)
+    if white_balance
+        XYZ = bradford_matrix(white_XYZ(λ, illuminant), white) * XYZ
+    end
+    return XYZ
+end
+
+"""
 Calculate birefringenge colors
 
 Parameters:
@@ -28,10 +61,9 @@ function birefringence_array(
     γ=nothing,
     vision::Vision=Standard(),
 )
-    XYZ = brightness * L_XYZ(λ, Γ, illuminant)
-    if white_balance
-        XYZ = bradford_matrix(white_XYZ(λ, illuminant), whitepoint(colorspace)) * XYZ
-    end
+    XYZ = birefringence_XYZ(Γ; λ=λ, illuminant=illuminant,
+                            white_balance=white_balance, brightness=brightness,
+                            white=whitepoint(colorspace))
     RGB_raw = XYZ_to_RGB(XYZ, colorspace)
     RGB_clip = clamp_RGB(RGB_raw)
     RGB_encoded = isnothing(γ) ? encode_RGB(RGB_clip, colorspace) :

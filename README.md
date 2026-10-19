@@ -93,6 +93,14 @@ These are: wavelengths 360 to 830 nm, no light source spectrum (equivalent to `I
 
 The result matches the paper's method to within mean ΔE₀₀ = 0.15 (max 0.71), which is not visible. The remaining differences are that this package uses analytic approximations of the CIE 1931 color matching functions rather than the tabulated values, and the corrected Adobe RGB matrix (the paper prints 2.04414 for 2.0414). Note that the paper's RGB values are Adobe RGB with a gamma of 0.5, but are displayed by most software as if they were sRGB.
 
+## CIE XYZ output
+
+`birefringence_XYZ(Γ; ...)` returns the colors as CIE 1931 XYZ, before conversion to RGB and so without clipping, with the same `λ`, `illuminant`, `white_balance` and `brightness` options. Use it to convert to other color spaces, e.g. CIELAB to compare colors.
+
+## Examples
+
+[`examples/`](examples) has a table of interference colors from 0 to 1600 nm, as RGB (both the published chart and physically based sRGB), CIE XYZ and CIELAB, and the script that makes it.
+
 ## Types of vision supported
 
 - `Standard()`
@@ -112,6 +120,7 @@ The result matches the paper's method to within mean ΔE₀₀ = 0.15 (max 0.71)
 - v0.2.0 Added `colorspace` option (`sRGB()`, `AdobeRGB()`). Default output is now sRGB (previously Adobe RGB), and gamma encoding defaults to each color space's standard transfer function instead of `x^0.5`. Pass `colorspace=AdobeRGB(), γ=0.5` to reproduce earlier output
 - v0.2.1 Fixed typo in the ȳ color matching function (left width 49.9 nm, should be 46.9 nm), which shifted all colors slightly towards green. Fixed crash when the wavelength grid `λ` uses integers
 - v0.3.0 Added `illuminant` (`D65()`, `IlluminantE()`, `IlluminantA()`, `Blackbody(T)`), `white_balance` and `brightness` options. Default light source is now D65 daylight (previously equal energy), with white balance. Colors are now normalised so that full transmission has luminance 1, replacing the 1/100 scale factor of Sørensen (2013). Added `sorensen2013()` settings to reproduce the published chart. Fixed the `xyY` function
+- v0.4.0 Added `birefringence_XYZ` for CIE XYZ output without clipping. Added `examples/` with a table of interference colors from 0 to 1600 nm
 
 # References
 
