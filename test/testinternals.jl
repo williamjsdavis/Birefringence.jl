@@ -53,16 +53,54 @@ function test_internals(λ_array, Γ_array)
         @test isapprox(XYZ_ranges, XYZ_downsample, atol=1e-5)
     end
 
-    RGB_ranges = Birefringence.XYZ_to_RGB(λ_array, Γ_array)
-    RGB_range_collect = Birefringence.XYZ_to_RGB(λ_array, Γ_collect)
-    RGB_collect_range = Birefringence.XYZ_to_RGB(λ_collect, Γ_collect)
-    RGB_collects = Birefringence.XYZ_to_RGB(λ_collect, Γ_array)
-    RGB_downsample = Birefringence.XYZ_to_RGB(λ_downsample, Γ_collect)
+    @testset "Illuminants" begin
+        B = Birefringence
+        # D65 table values, and linear interpolation between them
+        @test B.spd(D65(), 560.0) == 100.0
+        @test B.spd(D65(), 400.0) == 82.7549
+        @test B.spd(D65(), 562.5) ≈ (B.spd(D65(), 560.0) + B.spd(D65(), 565.0)) / 2
+        @test B.spd(D65(), 830.0) == 60.3125
+        @test_throws DomainError B.spd(D65(), 850.0)
+        @test B.spd(IlluminantE(), 500.0) == 1.0
+        @test B.spd(IlluminantA(), 560.0) ≈ 100.0
+        # Illuminant A is a blackbody at ≈ 2856 K
+        λ = 380.0:5.0:780.0
+        A = B.spd.(Ref(IlluminantA()), λ) ./ B.spd(IlluminantA(), 560.0)
+        P = B.spd.(Ref(Blackbody(2856)), λ) ./ B.spd(Blackbody(2856), 560.0)
+        @test isapprox(A, P, rtol=2e-3)
+        @test_throws AssertionError Blackbody(-1)
+        # Computed white points match published chromaticities
+        λ_fine = 360.0:1.0:830.0
+        for (ill, xy, tol) in ((D65(), [0.3127, 0.3290], 1e-3),
+                               (IlluminantE(), [1/3, 1/3], 1e-3),
+                               (IlluminantA(), [0.4476, 0.4074], 2e-3))
+            w = B.white_XYZ(λ_fine, ill)
+            @test w[2] ≈ 1.0
+            @test isapprox(B.xyY(reshape(w, 3, 1))[1:2], xy, atol=tol)
+        end
+        @test B.xyY([1.0 2.0; 1.0 2.0; 1.0 2.0]) ≈ [1/3 1/3; 1/3 1/3; 1.0 2.0]
+        # Quadrature weights integrate a constant exactly on irregular grids
+        @test sum(B.quadrature_weights([380.0, 381.0, 385.0, 400.0])) ≈ 20.0
+    end
+
+    @testset "White balance" begin
+        B = Birefringence
+        w_A = B.white_XYZ(380.0:5.0:780.0, IlluminantA())
+        M = B.bradford_matrix(w_A, B.D65_WHITE)
+        @test M * w_A ≈ B.D65_WHITE
+        @test B.bradford_matrix(B.D65_WHITE, B.D65_WHITE) ≈ [1 0 0; 0 1 0; 0 0 1]
+        # Crossed polarisers never transmit more than the light source
+        @test all(B.L_XYZ(λ_array, Γ_array)[2,:] .<= 1.0)
+    end
+
+    RGB_ranges = Birefringence.XYZ_to_RGB(Birefringence.L_XYZ(λ_array, Γ_array))
+    RGB_range_collect = Birefringence.XYZ_to_RGB(Birefringence.L_XYZ(λ_array, Γ_collect))
+    RGB_collect_range = Birefringence.XYZ_to_RGB(Birefringence.L_XYZ(λ_collect, Γ_collect))
+    RGB_collects = Birefringence.XYZ_to_RGB(Birefringence.L_XYZ(λ_collect, Γ_array))
+    RGB_downsample = Birefringence.XYZ_to_RGB(Birefringence.L_XYZ(λ_downsample, Γ_collect))
     RGB_clip_sample = Birefringence.clamp_RGB(RGB_ranges)
     RGB_γ_sample = Birefringence.RGB_γ_correction(RGB_clip_sample)
     RGB_array = Birefringence.RGB_typearray(RGB_γ_sample)
-    RGB_legacy = Birefringence.RGB_typearray(Birefringence.RGB_γ_correction(
-        Birefringence.clamp_RGB(Birefringence.XYZ_to_RGB(λ_array, Γ_array, AdobeRGB()))))
     @testset "RGB" begin
         @test size(RGB_ranges) == (3, Γ_length)
         @test size(RGB_range_collect) == (3, Γ_length)
@@ -92,5 +130,5 @@ function test_internals(λ_array, Γ_array)
         # Adobe RGB gamma is 563/256 ≈ 2.2
         @test Birefringence.encode(0.5, AdobeRGB()) ≈ 0.5^(256/563)
     end
-    return RGB_array, RGB_legacy
+    return RGB_array
 end

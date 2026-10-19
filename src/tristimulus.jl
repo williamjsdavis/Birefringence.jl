@@ -1,35 +1,46 @@
 # https://en.wikipedia.org/wiki/CIE_1931_color_space
 
-"Spectral transmission matrix to CIE XYZ tristimulus values"
-function L_XYZ(λ_vector::AbstractRange, Γ_vector)
-    #NOTE: Still unknown why the 1e-2 fudge factor is needed
-    return CIE_standard(λ_vector) *
-           Iλ(λ_vector, Γ_vector) * step(λ_vector) * 1e-2
-end
-
-function L_XYZ(λ_vector::AbstractVector, Γ_vector)
-    n = length(Γ_vector)
-    XYZ = zeros(3, n)
-    x̄ȳz̄ = CIE_standard(λ_vector)
-    Iλ_matrix = Iλ(λ_vector, Γ_vector)
-    for i in 1:3
-        for j in 1:n
-            XYZ[i,j] = integrate(λ_vector, x̄ȳz̄[i,:].*Iλ_matrix[:,j])
-        end
+"Trapezoidal quadrature weights for a (possibly irregular) wavelength grid"
+function quadrature_weights(λ_vector)
+    n = length(λ_vector)
+    w = zeros(n)
+    for i in 1:(n - 1)
+        h = λ_vector[i+1] - λ_vector[i]
+        w[i] += h / 2
+        w[i+1] += h / 2
     end
-    return 1e-2 * XYZ
+    return w
 end
 
-"Convert XYZ data to xyY format"
+"Quadrature weights multiplied by the illuminant's spectrum"
+illuminant_weights(λ_vector, illuminant::Illuminant) =
+    quadrature_weights(λ_vector) .* spd.(Ref(illuminant), λ_vector)
+
+"""
+Normalisation constant k = 1/∫S(λ)ȳ(λ)dλ, so that a sample transmitting all
+light has luminance Y = 1
+"""
+normalisation(x̄ȳz̄, w) = 1 / sum(x̄ȳz̄[2,:] .* w)
+
+"""
+Spectral transmission matrix to CIE XYZ tristimulus values, for a sample lit
+by `illuminant`. Normalised so that full transmission has Y = 1.
+"""
+function L_XYZ(λ_vector, Γ_vector, illuminant::Illuminant=D65())
+    w = illuminant_weights(λ_vector, illuminant)
+    x̄ȳz̄ = CIE_standard(λ_vector)
+    return normalisation(x̄ȳz̄, w) * x̄ȳz̄ * (w .* Iλ(λ_vector, Γ_vector))
+end
+
+"CIE XYZ of the illuminant itself (full transmission), with Y = 1"
+function white_XYZ(λ_vector, illuminant::Illuminant)
+    w = illuminant_weights(λ_vector, illuminant)
+    x̄ȳz̄ = CIE_standard(λ_vector)
+    return normalisation(x̄ȳz̄, w) * x̄ȳz̄ * w
+end
+
+"Convert XYZ data (one color per column) to xyY format"
 function xyY(XYZ)
-    n = length(Γ_vector)
-    XYZ = zeros(3, n)
-    x̄ȳz̄ = CIE_standard(λ_vector)
-    Iλ_matrix = Iλ(λ_vector, Γ_vector)
-    for i in 1:3
-        for j in 1:n
-            XYZ[i,j] = integrate(λ_vector, x̄ȳz̄[i,:].*Iλ_matrix[:,j])
-        end
-    end
-    return 1e-2 * XYZ
+    s = sum(XYZ, dims=1)
+    return vcat(XYZ[1:1,:] ./ s, XYZ[2:2,:] ./ s, XYZ[2:2,:])
 end

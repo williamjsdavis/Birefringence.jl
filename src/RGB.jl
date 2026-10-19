@@ -2,7 +2,7 @@
 
 """
 RGB color space that the output colors are expressed in. Both color spaces
-supported here use a D65 white point.
+supported here use a D65 white point (see `whitepoint`).
 
 Supported: `AdobeRGB()`, `sRGB()`
 """
@@ -32,13 +32,17 @@ const MRGB_SRGB = [ 3.2406 -1.5372 -0.4986;
                    -0.9689   1.8758  0.0415;
                     0.0557  -0.2040  1.0570]
 
+"CIE XYZ of the color space's white point, D65, with Y = 1"
+const D65_WHITE = [0.95047, 1.0, 1.08883]
+whitepoint(::RGBColorSpace) = D65_WHITE
+
 "XYZ to linear RGB conversion matrix"
 XYZ_to_RGB_matrix(::AdobeRGB) = MRGB_ADOBE
 XYZ_to_RGB_matrix(::sRGB) = MRGB_SRGB
 
-"CIE XYZ tristimulus values to linear RGB"
-XYZ_to_RGB(λ_vector, Γ_vector, colorspace::RGBColorSpace=sRGB()) =
-    XYZ_to_RGB_matrix(colorspace) * L_XYZ(λ_vector, Γ_vector)
+"CIE XYZ tristimulus values (one color per column) to linear RGB"
+XYZ_to_RGB(XYZ, colorspace::RGBColorSpace=sRGB()) =
+    XYZ_to_RGB_matrix(colorspace) * XYZ
 
 "Clamp RGB to (0,1), no gamma"
 clamp_RGB(x) = clamp.(x,0,1)
