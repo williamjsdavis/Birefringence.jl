@@ -9,12 +9,11 @@ const Γ_array = 0:20:2500
 Γ_length = length(Γ_array)
 
 # Internal functions
-RGB_array, RGB_legacy_internal = test_internals(λ_array, Γ_array)
+RGB_array = test_internals(λ_array, Γ_array)
 
 # Wrapped functions
 RGB_default = birefringence_array(Γ_array)
-RGB_wrapped = birefringence_array(Γ_array, λ=λ_array, γ=0.5)
-RGB_legacy = birefringence_array(Γ_array, λ=λ_array, colorspace=AdobeRGB(), γ=0.5)
+RGB_wrapped = birefringence_array(Γ_array, λ=λ_array, white_balance=false, γ=0.5)
 RGB_adobe = birefringence_array(Γ_array, colorspace=AdobeRGB())
 RGB_srgb = birefringence_array(Γ_array, colorspace=sRGB())
 RGB_linear = birefringence_array(Γ_array, colorspace=sRGB(), γ=1)
@@ -22,8 +21,6 @@ RGB_linear = birefringence_array(Γ_array, colorspace=sRGB(), γ=1)
     @test size(RGB_default) == (Γ_length,)
     @test size(RGB_wrapped) == (Γ_length,)
     @test all(RGB_wrapped .== RGB_array)
-    # Adobe RGB with γ=0.5 reproduces pre-v0.2.0 output
-    @test all(RGB_legacy .== RGB_legacy_internal)
     @test all(RGB_default .== RGB_srgb)
     @test size(RGB_srgb) == (Γ_length,)
     @test RGB_srgb != RGB_adobe
@@ -34,4 +31,26 @@ RGB_linear = birefringence_array(Γ_array, colorspace=sRGB(), γ=1)
     # Encoding brightens: encoded values are ≥ linear values
     @test all(c -> 0 <= c <= 1, reinterpret(Float64, RGB_srgb))
     @test all(reinterpret(Float64, RGB_srgb) .>= reinterpret(Float64, RGB_linear) .- 1e-12)
+end
+
+f(a) = reinterpret(Float64, a)
+@testset "Light source and brightness" begin
+    # Very high orders average to a neutral grey (half the light transmitted)
+    for ill in (D65(), IlluminantE(), IlluminantA(), Blackbody(3200))
+        c = birefringence_array([20000.0], λ=360.0:1.0:830.0, illuminant=ill)[1]
+        @test isapprox(c.r, c.g, atol=0.01) && isapprox(c.g, c.b, atol=0.01)
+        @test isapprox(c.g, Birefringence.encode(0.5, sRGB()), atol=0.01)
+    end
+    # Without white balance, a tungsten lamp gives an orange cast
+    c = birefringence_array([20000.0], λ=360.0:1.0:830.0,
+                            illuminant=IlluminantA(), white_balance=false)[1]
+    @test c.r > c.g > c.b
+    # D65 needs (almost) no white balance with D65-based color spaces
+    @test isapprox(f(birefringence_array(Γ_array)),
+                   f(birefringence_array(Γ_array, white_balance=false)), atol=0.01)
+    # Brightness scales linear RGB, before clipping
+    lin(b) = f(birefringence_array(Γ_array, brightness=b, γ=1))
+    unclipped = (lin(0.5) .< 0.5) .& (lin(0.5) .> 0)
+    @test lin(0.25)[unclipped] ≈ lin(0.5)[unclipped] ./ 2
+    @test all(lin(0.0) .== 0)
 end
