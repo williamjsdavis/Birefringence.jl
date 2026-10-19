@@ -37,7 +37,7 @@ XYZ_to_RGB_matrix(::AdobeRGB) = MRGB_ADOBE
 XYZ_to_RGB_matrix(::sRGB) = MRGB_SRGB
 
 "CIE XYZ tristimulus values to linear RGB"
-XYZ_to_RGB(λ_vector, Γ_vector, colorspace::RGBColorSpace=AdobeRGB()) =
+XYZ_to_RGB(λ_vector, Γ_vector, colorspace::RGBColorSpace=sRGB()) =
     XYZ_to_RGB_matrix(colorspace) * L_XYZ(λ_vector, Γ_vector)
 
 "Clamp RGB to (0,1), no gamma"

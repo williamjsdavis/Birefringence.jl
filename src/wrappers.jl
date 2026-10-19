@@ -6,7 +6,7 @@ Parameters:
 
 Optional parameters:
 λ => Wavelength integration grid, nm
-colorspace => Output RGB color space, `AdobeRGB()` (default) or `sRGB()`
+colorspace => Output RGB color space, `sRGB()` (default) or `AdobeRGB()`
 γ => Gamma encoding. `nothing` (default) uses the color space's standard
      transfer function; a number in [0,1] applies a simple power law x^γ
      instead (γ=1 gives linear RGB)
@@ -15,7 +15,7 @@ vision => Standard or color deficiency type
 function birefringence_array(
     Γ;
     λ=380.0:5.0:780.0,
-    colorspace::RGBColorSpace=AdobeRGB(),
+    colorspace::RGBColorSpace=sRGB(),
     γ=nothing,
     vision::Vision=Standard(),
 )

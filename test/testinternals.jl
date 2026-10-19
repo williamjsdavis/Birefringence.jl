@@ -58,6 +58,8 @@ function test_internals(λ_array, Γ_array)
     RGB_clip_sample = Birefringence.clamp_RGB(RGB_ranges)
     RGB_γ_sample = Birefringence.RGB_γ_correction(RGB_clip_sample)
     RGB_array = Birefringence.RGB_typearray(RGB_γ_sample)
+    RGB_legacy = Birefringence.RGB_typearray(Birefringence.RGB_γ_correction(
+        Birefringence.clamp_RGB(Birefringence.XYZ_to_RGB(λ_array, Γ_array, AdobeRGB()))))
     @testset "RGB" begin
         @test size(RGB_ranges) == (3, Γ_length)
         @test size(RGB_range_collect) == (3, Γ_length)
@@ -87,5 +89,5 @@ function test_internals(λ_array, Γ_array)
         # Adobe RGB gamma is 563/256 ≈ 2.2
         @test Birefringence.encode(0.5, AdobeRGB()) ≈ 0.5^(256/563)
     end
-    return RGB_array
+    return RGB_array, RGB_legacy
 end

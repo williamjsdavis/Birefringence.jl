@@ -9,11 +9,12 @@ const Γ_array = 0:20:2500
 Γ_length = length(Γ_array)
 
 # Internal functions
-RGB_array = test_internals(λ_array, Γ_array)
+RGB_array, RGB_legacy_internal = test_internals(λ_array, Γ_array)
 
 # Wrapped functions
 RGB_default = birefringence_array(Γ_array)
 RGB_wrapped = birefringence_array(Γ_array, λ=λ_array, γ=0.5)
+RGB_legacy = birefringence_array(Γ_array, λ=λ_array, colorspace=AdobeRGB(), γ=0.5)
 RGB_adobe = birefringence_array(Γ_array, colorspace=AdobeRGB())
 RGB_srgb = birefringence_array(Γ_array, colorspace=sRGB())
 RGB_linear = birefringence_array(Γ_array, colorspace=sRGB(), γ=1)
@@ -21,7 +22,9 @@ RGB_linear = birefringence_array(Γ_array, colorspace=sRGB(), γ=1)
     @test size(RGB_default) == (Γ_length,)
     @test size(RGB_wrapped) == (Γ_length,)
     @test all(RGB_wrapped .== RGB_array)
-    @test all(RGB_default .== RGB_adobe)
+    # Adobe RGB with γ=0.5 reproduces pre-v0.2.0 output
+    @test all(RGB_legacy .== RGB_legacy_internal)
+    @test all(RGB_default .== RGB_srgb)
     @test size(RGB_srgb) == (Γ_length,)
     @test RGB_srgb != RGB_adobe
     # Zero path difference is black in every color space
