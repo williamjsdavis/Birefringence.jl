@@ -82,3 +82,18 @@ end
     @test birefringence_array(Γ_array; sorensen2013()..., colorspace=sRGB()) !=
           birefringence_array(Γ_array; sorensen2013()...)
 end
+
+@testset "XYZ output" begin
+    XYZ = birefringence_XYZ(Γ_array)
+    @test size(XYZ) == (3, Γ_length)
+    @test XYZ[:, 1] == zeros(3)
+    # Converting the XYZ output gives the RGB output, before clipping
+    lin = Birefringence.XYZ_to_RGB(XYZ, sRGB())
+    unclipped = vec(all(0 .<= lin .<= 1, dims=1))
+    @test f(birefringence_array(Γ_array, γ=1))[repeat(unclipped, inner=3)] ≈ vec(lin[:, unclipped])
+    # Keywords are passed through
+    @test birefringence_XYZ(Γ_array, brightness=0.5) ≈ 0.5 .* XYZ
+    @test birefringence_XYZ(Γ_array, illuminant=IlluminantA()) != XYZ
+    # Values are not clipped
+    @test any(Birefringence.XYZ_to_RGB(XYZ, sRGB()) .< 0)
+end
