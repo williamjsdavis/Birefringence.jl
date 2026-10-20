@@ -1,7 +1,7 @@
 name = "Birefringence"
 uuid = "2f560466-aed1-4e17-adbb-45820e3f5211"
 authors = ["william davis <williamjsdavis@berkeley.edu>"]
-version = "0.4.1"
+version = "0.4.2"
 
 [deps]
 Images = "916415d5-f1e6-5110-898d-aaa5f9f070e0"
