@@ -1,4 +1,6 @@
 # Birefringence.jl
+[![DOI](https://zenodo.org/badge/451754147.svg)](https://doi.org/10.5281/zenodo.23489857)
+
 A computational calculation of the revised Michel-Lévy interference colour chart, based on Sørensen (2013). The default settings give physically accurate colors for comparison with photographs; the published chart can be reproduced with `sorensen2013()` (see below)
 
 <img width="1035" alt="Screen Shot 2022-01-18 at 10 23 30" src="https://user-images.githubusercontent.com/38541020/150920010-4e668a3c-7c0c-4d3f-8ab7-4f661f020844.png">
@@ -117,14 +119,15 @@ The result matches the paper's method to within mean ΔE₀₀ = 0.15 (max 0.71)
 
 If you use Birefringence.jl in published work, please cite both this package and Sørensen (2013), on which the calculation is based. The colors depend on the settings used, so please also state the package version and the settings, e.g. "default settings (D65, white balance, sRGB)" or "`sorensen2013()` settings".
 
-GitHub's "Cite this repository" button (from [`CITATION.cff`](CITATION.cff)) gives this citation in APA and BibTeX formats. In BibTeX:
+GitHub's "Cite this repository" button (from [`CITATION.cff`](CITATION.cff)) gives this citation in APA and BibTeX formats. The DOI [10.5281/zenodo.23489857](https://doi.org/10.5281/zenodo.23489857) always points to the latest version; each release also has its own DOI, listed on the [Zenodo page](https://doi.org/10.5281/zenodo.23489857). In BibTeX:
 
 ```bibtex
 @software{davis_birefringence_jl,
   author  = {Davis, William},
   title   = {Birefringence.jl: computational Michel-Lévy interference colour charts},
   url     = {https://github.com/williamjsdavis/Birefringence.jl},
-  version = {0.4.1},
+  version = {0.4.2},
+  doi     = {10.5281/zenodo.23489857},
   year    = {2026}
 }
 
@@ -149,6 +152,7 @@ GitHub's "Cite this repository" button (from [`CITATION.cff`](CITATION.cff)) giv
 - v0.3.0 Added `illuminant` (`D65()`, `IlluminantE()`, `IlluminantA()`, `Blackbody(T)`), `white_balance` and `brightness` options. Default light source is now D65 daylight (previously equal energy), with white balance. Colors are now normalised so that full transmission has luminance 1, replacing the 1/100 scale factor of Sørensen (2013). Added `sorensen2013()` settings to reproduce the published chart. Fixed the `xyY` function
 - v0.4.0 Added `birefringence_XYZ` for CIE XYZ output without clipping. Added `examples/` with a table of interference colors from 0 to 1600 nm
 - v0.4.1 Added `CITATION.cff` and a "Cite this work" section
+- v0.4.2 Added the Zenodo DOI to the citation and README
 
 # References
 
