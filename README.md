@@ -1,6 +1,10 @@
 # Birefringence.jl
 [![DOI](https://zenodo.org/badge/451754147.svg)](https://doi.org/10.5281/zenodo.23489857)
 
+<p align="center"><img src="docs/cover.gif" width="484" alt="Animated interference colors: a rotating gabbro thin section under crossed polars, a squeezed photoelastic disc, a soap bubble and an oil film on water"></p>
+
+<p align="center"><sub>All colors calculated with Birefringence.jl. Top: birefringence in a gabbro thin section under crossed polars, and in a plastic disc under load (photoelasticity). Bottom: thin-film interference in a soap bubble and an oil film on water, which follows the same color sequence.</sub></p>
+
 A computational calculation of the revised Michel-Lévy interference colour chart, based on Sørensen (2013). The default settings give physically accurate colors for comparison with photographs; the published chart can be reproduced with `sorensen2013()` (see below)
 
 <img width="1035" alt="Screen Shot 2022-01-18 at 10 23 30" src="https://user-images.githubusercontent.com/38541020/150920010-4e668a3c-7c0c-4d3f-8ab7-4f661f020844.png">
@@ -126,7 +130,7 @@ GitHub's "Cite this repository" button (from [`CITATION.cff`](CITATION.cff)) giv
   author  = {Davis, William},
   title   = {Birefringence.jl: computational Michel-Lévy interference colour charts},
   url     = {https://github.com/williamjsdavis/Birefringence.jl},
-  version = {0.4.2},
+  version = {0.4.3},
   doi     = {10.5281/zenodo.23489857},
   year    = {2026}
 }
@@ -153,6 +157,7 @@ GitHub's "Cite this repository" button (from [`CITATION.cff`](CITATION.cff)) giv
 - v0.4.0 Added `birefringence_XYZ` for CIE XYZ output without clipping. Added `examples/` with a table of interference colors from 0 to 1600 nm
 - v0.4.1 Added `CITATION.cff` and a "Cite this work" section
 - v0.4.2 Added the Zenodo DOI to the citation and README
+- v0.4.3 Added an animated cover to the README
 
 # References
 
